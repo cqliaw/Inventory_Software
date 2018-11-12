@@ -18,6 +18,7 @@ namespace InventoryManagementSoftware.Controllers
             List<Item> itemList = new List<Item>();
             using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
             {
+                //Hello
                 itemList = db.Query<Item>("Select * From Items").ToList();
             }
             return View(itemList);
