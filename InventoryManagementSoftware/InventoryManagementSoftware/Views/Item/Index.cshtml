@@ -10,9 +10,10 @@
     @Html.ActionLink("Create New", "Create")
     @Html.ActionLink("In/Out", "StockInOut")
 </p>
+
 @using (Html.BeginForm("Index", "Item", FormMethod.Post))
 {
-    <button type="submit" value="In/Out" class="btn btn-primary" onclick="return confirm('GG.COM')">GG.COM</button>
+
     <table class="table">
         <tr>
             <th style="display:none">
@@ -71,10 +72,10 @@
                     @Html.DisplayFor(modelItem => item.LastUpdatedTime)
                 </td>
                 <td>
-                    @Html.TextBox("inQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @Value = "0" })
+                    @Html.TextBox("inQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @max = 100, @Value = "0" })
                 </td>
                 <td>
-                    @Html.TextBox("outQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @Value = "0" })
+                    @Html.TextBox("outQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @max = item.Quantity, @Value = "0" })
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.ItemID }) |
@@ -84,4 +85,6 @@
             </tr>
         }
     </table>
+    @Html.TextBox("updatedBy", null, new { @class = "form-control"})
+    <input type="submit" value="Save" class="btn btn-default" />
 }

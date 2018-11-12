@@ -12,44 +12,54 @@ namespace InventoryManagementSoftware.Controllers
 {
     public class ItemController : Controller
     {
+        public static List<Item> itemList; 
         // GET: Item
         public ActionResult Index()
         {
-            List<Item> itemList = new List<Item>();
+
             using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
             {
-                //Hello
                 itemList = db.Query<Item>("Select * From Items").ToList();
+
             }
             return View(itemList);
         }
 
+        // Update Table (POST)
         [HttpPost]
-        public ActionResult Index(FormCollection formCollection, string inQuantity)
+        public ActionResult Index(FormCollection formCollection)
         {
-            Item itemDetails = new Item();
-            using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+            string[] inQuantity = formCollection["inQuantity"].Split(new char[] { ',' });
+            string[] outQuantity = formCollection["outQuantity"].Split(new char[] { ',' });
+            string updateBy = formCollection["updatedBy"];
+            for(int i = 0; i < itemList.Count; i++)
             {
-                string[] IDs = formCollection["ItemID"].Split(new char[] { ',' });
-                //foreach (string id in IDs)
-                //{
-                //    itemDetails = db.Query<Item>("Select * From Items Where ItemID =" + id, new { id }).SingleOrDefault();
+                try
+                {
+                    using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+                    {
+                        if(Convert.ToInt32(outQuantity[i]) > 0 || Convert.ToInt32(inQuantity[i]) > 0)
+                        {
+                            Item currentItem = itemList[i];
+                            int newQuantity = currentItem.Quantity + Convert.ToInt32(inQuantity[i]) - Convert.ToInt32(outQuantity[i]);
+                            string sqlQuery = "Update Items SET Quantity='" + newQuantity + "',LastUpdatedBy='" + updateBy + "'WHERE ItemID='" + itemList[i].ItemID + "'";
+                            int rowsAffected = db.Execute(sqlQuery);
+                            string sqlQuery2 = "Insert Into LogItems (ItemID, ItemBrand, ItemModel, ItemName, QuantityIn, QuantityOut, LastUpdatedBy, LastUpdatedTime) " +
+                            "Values('" + itemList[i].ItemID + "','" + itemList[i].ItemBrand + "','" + itemList[i].ItemModel + "','" + itemList[i].ItemName + "','" + inQuantity[i] + "','" + outQuantity[i] + "','" + itemList[i].LastUpdatedBy + "','" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "')";
+                            int rowsAffected2 = db.Execute(sqlQuery2);
+                        }
+                       
+                    }
 
-                //    string sqlQuery = "Update Items SET Quantity='" + inQuantity + "'WHERE ItemID='" + itemDetails.ItemID + "'";
-
-                //    int rowsAffected = db.Execute(sqlQuery);
-                //}
-
-                itemDetails = db.Query<Item>("Select * From Items Where ItemID =3").SingleOrDefault();
-
-                string sqlQuery = "Update Items SET Quantity='" + IDs.ElementAt(1) + "'WHERE ItemID='" + itemDetails.ItemID + "'";
-
-                int rowsAffected = db.Execute(sqlQuery);
-
-                return RedirectToAction("Index");
+                   
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.Print(DateTime.Now.ToString("MM/dd/yyyy ss:mm:HH"));
+                }
             }
+            return RedirectToAction("Index");
         }
-
         // GET: Item/Details/5
         public ActionResult Details(int id)
         {

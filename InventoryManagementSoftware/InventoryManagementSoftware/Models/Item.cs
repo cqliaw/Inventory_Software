@@ -1,4 +1,6 @@
-﻿namespace InventoryManagementSoftware.Models
+﻿using System.Collections.Generic;
+
+namespace InventoryManagementSoftware.Models
 {
     public class Item
     {
