@@ -10,56 +10,72 @@
     @Html.ActionLink("Create New", "Create")
     @Html.ActionLink("In/Out", "StockInOut")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.ItemBrand)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ItemModel)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ItemName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Quantity)
-        </th>
-
-        <th>
-            @Html.DisplayNameFor(model => model.LastUpdatedBy)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LastUpdatedTime)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+@using (Html.BeginForm("Index", "Item", FormMethod.Post))
+{
+    <button type="submit" value="In/Out" class="btn btn-primary" onclick="return confirm('GG.COM')">GG.COM</button>
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemBrand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemModel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastUpdatedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastUpdatedTime)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ItemID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ItemID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ItemID })
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemBrand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdatedTime)
+            </th>
+            <th></th>
         </tr>
-    }
-</table>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemID, new { name = item.ItemID })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemBrand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemModel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedTime)
+                </td>
+                <td>
+                    @Html.TextBox("inQuantity", null, new { @class = "form-control" })
+                </td>
+                <td>
+                    @Html.TextBox("outTextBox", null, new { @class = "form-control" })
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ItemID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ItemID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ItemID })
+                </td>
+            </tr>
+        }
+    </table>
+}

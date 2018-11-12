@@ -23,6 +23,32 @@ namespace InventoryManagementSoftware.Controllers
             return View(itemList);
         }
 
+        [HttpPost]
+        public ActionResult Index(FormCollection formCollection, string inQuantity)
+        {
+            Item itemDetails = new Item();
+            using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+            {
+                string[] IDs = formCollection["ItemID"].Split(new char[] { ',' });
+                //foreach (string id in IDs)
+                //{
+                //    itemDetails = db.Query<Item>("Select * From Items Where ItemID =" + id, new { id }).SingleOrDefault();
+
+                //    string sqlQuery = "Update Items SET Quantity='" + inQuantity + "'WHERE ItemID='" + itemDetails.ItemID + "'";
+
+                //    int rowsAffected = db.Execute(sqlQuery);
+                //}
+
+                itemDetails = db.Query<Item>("Select * From Items Where ItemID =3").SingleOrDefault();
+
+                string sqlQuery = "Update Items SET Quantity='" + IDs.ElementAt(1) + "'WHERE ItemID='" + itemDetails.ItemID + "'";
+
+                int rowsAffected = db.Execute(sqlQuery);
+
+                return RedirectToAction("Index");
+            }
+        }
+
         // GET: Item/Details/5
         public ActionResult Details(int id)
         {
