@@ -9,6 +9,7 @@
 <p>
     @Html.ActionLink("Create New", "Create")
     @Html.ActionLink("In/Out", "StockInOut")
+    @Html.ActionLink("Log", "LogItemIndex")
 </p>
 
 @using (Html.BeginForm("Index", "Item", FormMethod.Post))
@@ -78,13 +79,11 @@
                     @Html.TextBox("outQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @max = item.Quantity, @Value = "0" })
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ItemID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.ItemID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ItemID })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ItemID })
                 </td>
             </tr>
         }
     </table>
-    @Html.TextBox("updatedBy", null, new { @class = "form-control"})
+    @Html.TextBox("updatedBy", null, new { @class = "form-control" })
     <input type="submit" value="Save" class="btn btn-default" />
 }

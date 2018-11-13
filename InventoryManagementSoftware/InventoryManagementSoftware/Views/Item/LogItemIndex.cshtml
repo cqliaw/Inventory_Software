@@ -1,0 +1,69 @@
+﻿@model IEnumerable<InventoryManagementSoftware.Models.LogItem>
+
+@{
+    ViewBag.Title = "LogItemIndex";
+}
+
+<h2>LogItemIndex</h2>
+
+@using (Html.BeginForm("LogItemIndex", "Item", FormMethod.Post))
+{
+    <p style="display:flex; justify-content:flex-end">
+        @Html.TextBox("searchDate", null, new { @class = " col-md-2 form-control datepicker ", @style = "width:200px", @type = "date" })
+        <input type="submit" id="btnSearch" class="btn btn-primary" value="Search" style="margin-left:20px" />
+    </p>
+    <table class="table">
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.ItemBrand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityIn)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QuantityOut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastUpdatedTime)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemBrand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemModel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuantityIn)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QuantityOut)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastUpdatedTime)
+                </td>
+            </tr>
+        }
+    </table>
+}

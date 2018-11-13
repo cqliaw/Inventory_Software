@@ -12,15 +12,14 @@ namespace InventoryManagementSoftware.Controllers
 {
     public class ItemController : Controller
     {
-        public static List<Item> itemList; 
+        public static List<Item> itemList;
+
         // GET: Item
         public ActionResult Index()
         {
-
             using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
             {
                 itemList = db.Query<Item>("Select * From Items").ToList();
-
             }
             return View(itemList);
         }
@@ -32,13 +31,13 @@ namespace InventoryManagementSoftware.Controllers
             string[] inQuantity = formCollection["inQuantity"].Split(new char[] { ',' });
             string[] outQuantity = formCollection["outQuantity"].Split(new char[] { ',' });
             string updateBy = formCollection["updatedBy"];
-            for(int i = 0; i < itemList.Count; i++)
+            for (int i = 0; i < itemList.Count; i++)
             {
                 try
                 {
                     using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
                     {
-                        if(Convert.ToInt32(outQuantity[i]) > 0 || Convert.ToInt32(inQuantity[i]) > 0)
+                        if (Convert.ToInt32(outQuantity[i]) > 0 || Convert.ToInt32(inQuantity[i]) > 0)
                         {
                             Item currentItem = itemList[i];
                             int newQuantity = currentItem.Quantity + Convert.ToInt32(inQuantity[i]) - Convert.ToInt32(outQuantity[i]);
@@ -48,10 +47,7 @@ namespace InventoryManagementSoftware.Controllers
                             "Values('" + itemList[i].ItemID + "','" + itemList[i].ItemBrand + "','" + itemList[i].ItemModel + "','" + itemList[i].ItemName + "','" + inQuantity[i] + "','" + outQuantity[i] + "','" + itemList[i].LastUpdatedBy + "','" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "')";
                             int rowsAffected2 = db.Execute(sqlQuery2);
                         }
-                       
                     }
-
-                   
                 }
                 catch (Exception e)
                 {
@@ -60,6 +56,32 @@ namespace InventoryManagementSoftware.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        //GET: Item
+        public ActionResult LogItemIndex()
+        {
+            List<LogItem> logItemList = new List<LogItem>();
+
+            using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+            {
+                logItemList = db.Query<LogItem>("Select * From LogItems").ToList();
+            }
+            return View(logItemList);
+        }
+
+        [HttpPost]
+        public ActionResult LogItemIndex(DateTime searchDate)
+        {
+            List<LogItem> logItemList = new List<LogItem>();
+            string date = searchDate.ToString("yyyy-MM-dd");
+
+            using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+            {
+                logItemList = db.Query<LogItem>("Select * From LogItems Where CAST(LastUpdatedTime as DATE)='" + date + "'").ToList();
+            }
+            return View(logItemList);
+        }
+
         // GET: Item/Details/5
         public ActionResult Details(int id)
         {
@@ -86,16 +108,17 @@ namespace InventoryManagementSoftware.Controllers
                 using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
                 {
                     string sqlQuery = "Insert Into Items (ItemBrand, ItemModel, ItemName, Quantity, LastUpdatedBy, LastUpdatedTime) " +
-                        "Values('" + item.ItemBrand + "','" + item.ItemModel + "','" + item.ItemName + "','" + item.Quantity + "','" + item.LastUpdatedBy + "','" + DateTime.Now + "')";
+                        "Values('" + item.ItemBrand + "','" + item.ItemModel + "','" + item.ItemName + "','" + item.Quantity + "','" + item.LastUpdatedBy + "','" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "')";
 
                     int rowAffected = db.Execute(sqlQuery);
                 }
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                System.Diagnostics.Debug.Print(ex.Message);
+                return null;
             }
         }
 
