@@ -31,32 +31,108 @@ namespace InventoryManagementSoftware.Controllers
             string[] inQuantity = formCollection["inQuantity"].Split(new char[] { ',' });
             string[] outQuantity = formCollection["outQuantity"].Split(new char[] { ',' });
             string updateBy = formCollection["updatedBy"];
-            for (int i = 0; i < itemList.Count; i++)
+            string confirm_value = formCollection["confirm_value"];
+            if (confirm_value.Equals("Yes"))
             {
-                try
+                for (int i = 0; i < itemList.Count; i++)
                 {
-                    using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+                    try
                     {
-                        if (Convert.ToInt32(outQuantity[i]) > 0 || Convert.ToInt32(inQuantity[i]) > 0)
+                        using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
                         {
-                            Item currentItem = itemList[i];
-                            int newQuantity = currentItem.Quantity + Convert.ToInt32(inQuantity[i]) - Convert.ToInt32(outQuantity[i]);
-                            string sqlQuery = "Update Items SET Quantity='" + newQuantity + "',LastUpdatedBy='" + updateBy + "'WHERE ItemID='" + itemList[i].ItemID + "'";
-                            int rowsAffected = db.Execute(sqlQuery);
-                            string sqlQuery2 = "Insert Into LogItems (ItemID, ItemBrand, ItemModel, ItemName, QuantityIn, QuantityOut, LastUpdatedBy, LastUpdatedTime) " +
-                            "Values('" + itemList[i].ItemID + "','" + itemList[i].ItemBrand + "','" + itemList[i].ItemModel + "','" + itemList[i].ItemName + "','" + inQuantity[i] + "','" + outQuantity[i] + "','" + itemList[i].LastUpdatedBy + "','" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "')";
-                            int rowsAffected2 = db.Execute(sqlQuery2);
+                            if (Convert.ToInt32(outQuantity[i]) > 0 || Convert.ToInt32(inQuantity[i]) > 0)
+                            {
+                                Item currentItem = itemList[i];
+                                int newQuantity = currentItem.Quantity + Convert.ToInt32(inQuantity[i]) - Convert.ToInt32(outQuantity[i]);
+                                string sqlQuery = "Update Items SET Quantity='" + newQuantity + "',LastUpdatedBy='" + updateBy + "'WHERE ItemID='" + itemList[i].ItemID + "'";
+                                int rowsAffected = db.Execute(sqlQuery);
+                                string sqlQuery2 = "Insert Into LogItems (ItemID, ItemBrand, ItemModel, ItemName, QuantityIn, QuantityOut, LastUpdatedBy, LastUpdatedTime) " +
+                                "Values('" + itemList[i].ItemID + "','" + itemList[i].ItemBrand + "','" + itemList[i].ItemModel + "','" + itemList[i].ItemName + "','" + inQuantity[i] + "','" + outQuantity[i] + "','" + itemList[i].LastUpdatedBy + "','" + DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss") + "')";
+                                int rowsAffected2 = db.Execute(sqlQuery2);
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.Print(DateTime.Now.ToString("MM/dd/yyyy ss:mm:HH"));
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.Print(DateTime.Now.ToString("MM/dd/yyyy ss:mm:HH"));
+                    }
                 }
             }
+           
             return RedirectToAction("Index");
         }
 
+         //GET: Item
+         public ActionResult SummaryItem()
+        {
+            List<LogItem> logItemList = new List<LogItem>();
+
+            using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+            {
+                string date = DateTime.Now.ToString("yyyy-MM-dd");
+                 logItemList = db.Query<LogItem>("Select * From LogItems Where CAST(LastUpdatedTime as DATE)='" + date + "'").ToList();
+            }
+            Dictionary<String, SummaryItem> checkItems = new Dictionary<string, SummaryItem>();
+            for(int i = 0; i < logItemList.Count; i++)
+            {
+                string currentItem = logItemList[i].ItemBrand + " " + logItemList[i].ItemModel + " " + logItemList[i].ItemName;
+                if (!checkItems.ContainsKey(currentItem))
+                {
+                    SummaryItem newItem = new SummaryItem();
+                    newItem.ItemName = logItemList[i].ItemName;
+                    newItem.ItemBrand = logItemList[i].ItemBrand;
+                    newItem.ItemModel = logItemList[i].ItemModel;
+                    newItem.QuantityIn = logItemList[i].QuantityIn;
+                    newItem.QuantityOut = logItemList[i].QuantityOut;
+                    checkItems.Add(currentItem, newItem);
+                }
+                else
+                {
+                    SummaryItem item;
+                    checkItems.TryGetValue(currentItem, out item);
+                    item.QuantityIn = item.QuantityIn + logItemList[i].QuantityIn;
+                    item.QuantityOut = item.QuantityOut + logItemList[i].QuantityOut;
+
+                }
+            }
+            return View(checkItems.Values.ToList());
+        }
+
+        [HttpPost]
+        public ActionResult SummaryItem(DateTime searchDate)
+        {
+            List<LogItem> logItemList = new List<LogItem>();
+
+            using (IDbConnection db = new SqlConnection(ConfigurationManager.ConnectionStrings["InventoryManagementSoftware.Properties.Settings.ProductConnectionString"].ConnectionString))
+            {
+                string date = searchDate.ToString("yyyy-MM-dd");
+                logItemList = db.Query<LogItem>("Select * From LogItems Where CAST(LastUpdatedTime as DATE)='" + date + "'").ToList();
+            }
+            Dictionary<String, SummaryItem> checkItems = new Dictionary<string, SummaryItem>();
+            for (int i = 0; i < logItemList.Count; i++)
+            {
+                string currentItem = logItemList[i].ItemBrand + " " + logItemList[i].ItemModel + " " + logItemList[i].ItemName;
+                if (!checkItems.ContainsKey(currentItem))
+                {
+                    SummaryItem newItem = new SummaryItem();
+                    newItem.ItemName = logItemList[i].ItemName;
+                    newItem.ItemBrand = logItemList[i].ItemBrand;
+                    newItem.ItemModel = logItemList[i].ItemModel;
+                    newItem.QuantityIn = logItemList[i].QuantityIn;
+                    newItem.QuantityOut = logItemList[i].QuantityOut;
+                    checkItems.Add(currentItem, newItem);
+                }
+                else
+                {
+                    SummaryItem item;
+                    checkItems.TryGetValue(currentItem, out item);
+                    item.QuantityIn = item.QuantityIn + logItemList[i].QuantityIn;
+                    item.QuantityOut = item.QuantityOut + logItemList[i].QuantityOut;
+
+                }
+            }
+            return View(checkItems.Values.ToList());
+        }
         //GET: Item
         public ActionResult LogItemIndex()
         {
@@ -188,5 +264,7 @@ namespace InventoryManagementSoftware.Controllers
                 return View();
             }
         }
+
+
     }
 }

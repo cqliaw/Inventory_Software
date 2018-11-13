@@ -8,14 +8,14 @@
 
 <p>
     @Html.ActionLink("Create New", "Create")
-    @Html.ActionLink("In/Out", "StockInOut")
+    @Html.ActionLink("Summary", "SummaryItem")
     @Html.ActionLink("Log", "LogItemIndex")
 </p>
 
 @using (Html.BeginForm("Index", "Item", FormMethod.Post))
 {
 
-    <table class="table">
+    <table class="table" id="displayTable">
         <tr>
             <th style="display:none">
                 @Html.DisplayNameFor(model => model.ItemID)
@@ -55,13 +55,19 @@
                     @Html.DisplayFor(modelItem => item.ItemID)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ItemBrand)
+                    <span class="itemBrand">
+                        @Html.DisplayFor(modelItem => item.ItemBrand)
+                    </span>
+
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ItemModel)
+                    <span class="itemModel">
+                        @Html.DisplayFor(modelItem => item.ItemModel)
+                    </span>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ItemName)
+                    <span class="itemName">@Html.DisplayFor(modelItem => item.ItemName)</span>
+
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Quantity)
@@ -73,10 +79,10 @@
                     @Html.DisplayFor(modelItem => item.LastUpdatedTime)
                 </td>
                 <td>
-                    @Html.TextBox("inQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @max = 100, @Value = "0" })
+                    @Html.TextBox("inQuantity", null, new { @class = "form-control inQuantity", @type = "number", @min = "0", @max = 100, @Value = "0" })
                 </td>
                 <td>
-                    @Html.TextBox("outQuantity", null, new { @class = "form-control", @type = "number", @min = "0", @max = item.Quantity, @Value = "0" })
+                    @Html.TextBox("outQuantity", null, new { @class = "form-control outQuantity", @type = "number", @min = "0", @max = item.Quantity, @Value = "0" })
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.ItemID })
@@ -85,5 +91,41 @@
         }
     </table>
     @Html.TextBox("updatedBy", null, new { @class = "form-control" })
-    <input type="submit" value="Save" class="btn btn-default" />
+    <input type="submit" value="Save" onclick="Confirm()" class="btn btn-default" />
+    <input id = "confirm_value" hidden="hidden" name="confirm_value" value="No"/>
 }
+
+<script type="text/javascript">
+    function Confirm() {
+        var i = 0;
+        var displayString = ""; 
+        $('#displayTable tr').each(function () {
+            if (i == 0) {
+                displayString = "Item Name   Item Brand   Item Model   In Quantity   Out Quantity\n"
+            }
+            if (i > 0) {
+                var inQuantity = ($(this).find(".inQuantity").val());
+                var outQuantity = ($(this).find(".outQuantity").val());
+                var itemName = ($(this).find(".itemName").text());
+                var itemModel = ($(this).find(".itemModel").text());
+                var itemBrand = ($(this).find(".itemBrand").text());
+                if (inQuantity > 0 || outQuantity > 0) {
+                    displayString = displayString + itemName.trim() + "   " + itemBrand.trim() + "   " + itemModel.trim() + "   " + inQuantity + "   " + outQuantity;
+                    displayString = displayString + "\n"
+        
+                }
+               
+            }
+            i = i + 1;
+        });
+        var confirmation = confirm(displayString);
+        if (confirmation) {
+            document.getElementById("confirm_value").value = "Yes";
+           
+        } else {
+            document.getElementById("confirm_value").value = "No";
+        }
+        
+
+    }
+</script>

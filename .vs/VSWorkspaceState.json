@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\InventoryManagementSoftware"
+    "\\InventoryManagementSoftware",
+    "\\InventoryManagementSoftware\\InventoryManagementSoftware",
+    "\\InventoryManagementSoftware\\InventoryManagementSoftware\\Controllers",
+    "\\InventoryManagementSoftware\\InventoryManagementSoftware\\Models",
+    "\\InventoryManagementSoftware\\InventoryManagementSoftware\\Views",
+    "\\InventoryManagementSoftware\\InventoryManagementSoftware\\Views\\Item"
   ],
   "SelectedNode": "\\InventoryManagementSoftware\\InventoryManagementSoftware.sln",
   "PreviewInSolutionExplorer": false

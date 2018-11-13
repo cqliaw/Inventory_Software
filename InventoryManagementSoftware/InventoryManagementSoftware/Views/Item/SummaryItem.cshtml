@@ -1,12 +1,11 @@
-﻿@model IEnumerable<InventoryManagementSoftware.Models.LogItem>
+﻿@model IEnumerable<InventoryManagementSoftware.Models.SummaryItem>
 
 @{
-    ViewBag.Title = "LogItemIndex";
+    ViewBag.Title = "Summary";
 }
 
-<h2>LogItemIndex</h2>
-
-@using (Html.BeginForm("LogItemIndex", "Item", FormMethod.Post))
+<h2>SummaryItem</h2>
+@using (Html.BeginForm("SummaryItem", "Item", FormMethod.Post))
 {
     <p style="display:flex; justify-content:flex-end">
         @Html.TextBox("searchDate", null, new { @class = " col-md-2 form-control datepicker ", @style = "width:200px", @type = "date" })
@@ -14,7 +13,6 @@
     </p>
     <table class="table">
         <tr>
-
             <th>
                 @Html.DisplayNameFor(model => model.ItemBrand)
             </th>
@@ -30,18 +28,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.QuantityOut)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastUpdatedBy)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastUpdatedTime)
-            </th>
             <th></th>
         </tr>
-        
+
         @foreach (var item in Model)
         {
-            
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.ItemBrand)
@@ -58,13 +49,8 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.QuantityOut)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastUpdatedBy)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastUpdatedTime)
-                </td>
             </tr>
         }
+
     </table>
 }
